@@ -1,3 +1,4 @@
+/* 
 -- vine table to hold the data we exported from AWS
 CREATE TABLE vine_table (
   review_id TEXT PRIMARY KEY,
@@ -7,7 +8,7 @@ CREATE TABLE vine_table (
   vine TEXT,
   verified_purchase TEXT
 );
-
+*/
 
 DROP TABLE IF EXISTS vines_table_gte_20;
 -- Create a table with records that have more than 20 votes
@@ -38,13 +39,18 @@ FROM vines_table_helpful_50pct
 WHERE vine = 'N';
 
 -- Provide the Total Count, FiveStarReviews, and percent of five star reviews for Vine members
-SELECT count(*) as "TotalCount",
-	   sum(case when star_rating = 5 then 1 else 0 end) as FiveStarReviews,
-	   ROUND((cast(sum(case when star_rating = 5 then 1 else 0 end) as numeric)/count(*))*100,1)  as Percent5StarReview
-FROM vines_table_program_y;
-
+SELECT 'Vine' as MemberStatus, 
+       count(*) as "Total Count",
+	   sum(case when star_rating = 5 then 1 else 0 end) as "Five Star Review Count",
+	   ROUND((cast(sum(case when star_rating = 5 then 1 else 0 end) as numeric)/count(*))*100,1)  as "Percent 5 Star Review",
+	   ROUND(avg(star_rating),1) "Mean Star Rating"
+FROM vines_table_program_y
+UNION 
 -- Provide the Total Count, FiveStarReviews, and percent of five star reviews for Non-Vine members
-SELECT count(*) as "TotalCount",
-	   sum(case when star_rating = 5 then 1 else 0 end) as FiveStarReviews,
-	   ROUND((cast(sum(case when star_rating = 5 then 1 else 0 end) as numeric)/count(*))*100,1)  as Percent5StarReview
+SELECT 'Non-Vine' as MemberStatus, count(*) as "Total Count",
+	   sum(case when star_rating = 5 then 1 else 0 end) as "FiveStarReviews",
+	   ROUND((cast(sum(case when star_rating = 5 then 1 else 0 end) as numeric)/count(*))*100,1)  as "Percent 5 Star Review", 
+	   ROUND(avg(star_rating),1)
 FROM vines_table_program_n;
+
+
